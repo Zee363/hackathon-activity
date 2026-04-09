@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { questions, Question } from '@/data/questions';
 import Timer from './Timer';
 import CodeChallenge from './CodeChallenge';
@@ -11,6 +11,18 @@ export default function QuizView() {
   const [answers, setAnswers] = useState<any>({});
   const [isFinished, setIsFinished] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [score, setScore] = useState<string | null>(null);
+
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+
+  useEffect(() => {
+    // Get user info from localStorage
+    const name = localStorage.getItem('quiz_user_name') || 'Anonymous';
+    const email = localStorage.getItem('quiz_user_email') || 'no-email@provided.com';
+    setUserName(name);
+    setUserEmail(email);
+  }, []);
 
   const question = questions[currentIdx];
   const SECONDS_PER_QUESTION = 120;
@@ -26,10 +38,31 @@ export default function QuizView() {
   const finishQuiz = async () => {
     setIsFinished(true);
     setIsSubmitting(true);
-    // TODO: Send to API
-    setTimeout(() => {
+    
+    try {
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          answers,
+          userName: userName || 'Anonymous',
+          userEmail: userEmail || 'no-email@provided.com',
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setScore(data.score);
+      } else {
+        console.error("Submission failed:", data.error);
+      }
+    } catch (error) {
+      console.error("Submission Error:", error);
+    } finally {
       setIsSubmitting(false);
-    }, 2000);
+    }
   };
 
   const handleMCQSelect = (optionIndex: number) => {
@@ -48,22 +81,32 @@ export default function QuizView() {
           animate={{ scale: 1, opacity: 1 }}
           className="bg-white/5 border border-white/8 p-8 rounded-3xl shadow-2xl backdrop-blur-xl text-center max-w-md w-full relative overflow-hidden"
         >
+          
           <div className="w-20 h-20 bg-white/10 text-white rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
           </div>
+          
           <h2 className="text-3xl font-semibold mb-2">Quiz Completed!</h2>
-          <p className="text-white/55 mb-6">Your answers have been submitted successfully.</p>
+          <p className="text-white/55 mb-6 font-medium">Well done, {userName}!</p>
+          
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8 backdrop-blur-sm">
+             <p className="text-sm text-white/40 uppercase tracking-widest font-bold mb-1">Your Score</p>
+             <div className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#720075] to-[#ff7300]">
+               {score || "--/--"}
+             </div>
+          </div>
+
           {isSubmitting ? (
             <div className="flex items-center justify-center space-x-2 text-white">
               <span className="animate-bounce">●</span>
               <span className="animate-bounce delay-100">●</span>
               <span className="animate-bounce delay-200">●</span>
-              <span className="ml-2 text-sm text-white/55">Saving results...</span>
+              <span className="ml-2 text-sm text-white/55">Recording results...</span>
             </div>
           ) : (
             <button 
               onClick={() => window.location.href = '/'}
-              className="px-6 py-3 bg-white text-[#0a1733] rounded-xl font-bold hover:bg-white/88 transition-all w-full"
+              className="px-6 py-3 bg-white text-[#0a1733] rounded-xl font-bold hover:bg-white/88 transition-all w-full shadow-[0_4px_15px_rgba(255,255,255,0.1)]"
             >
               Return Home
             </button>
@@ -173,3 +216,4 @@ export default function QuizView() {
     </div>
   );
 }
+

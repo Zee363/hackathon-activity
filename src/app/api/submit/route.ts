@@ -1,20 +1,37 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
 import { google } from 'googleapis';
 import { questions } from '@/data/questions';
 
 export async function POST(req: Request) {
   try {
-    const supabase = await createClient();
-    
-    // In a real scenario, you authenticate with Supabase here
-    // const { data: { user }, error } = await supabase.auth.getUser()
-    // if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
     const body = await req.json();
     const { answers, userName, userEmail } = body;
 
+    if (!userName || !userEmail) {
+      return NextResponse.json({ error: 'Name and Email are required' }, { status: 400 });
+    }
+
     // 1. Grade the answers
+    const validateCode = (questionId: number, userCode: string): boolean => {
+      try {
+        if (questionId === 9) {
+          // Challenge 9: Reverse a String
+          // We wrap the user's code and then call their function
+          const fn = new Function('str', `${userCode}; return reverseString(str);`);
+          return fn("hello") === "olleh" && fn("abc") === "cba";
+        }
+        if (questionId === 10) {
+          // Challenge 10: Find the Largest Number
+          const fn = new Function('arr', `${userCode}; return findMax(arr);`);
+          return fn([1, 5, 3, 9, 2]) === 9 && fn([-10, -2, -5]) === -2;
+        }
+        return false;
+      } catch (e) {
+        console.error(`Error validating code for Q${questionId}:`, e);
+        return false;
+      }
+    };
+
     let score = 0;
     const gradedResults = questions.map((q) => {
       const userAnswer = answers[q.id];
@@ -23,13 +40,10 @@ export async function POST(req: Request) {
       if (q.type === 'mcq') {
         isCorrect = userAnswer === q.correctAnswer;
         if (isCorrect) score += 1;
-      } else {
-        // Simplified Logic grading for Hackathon. In real prod, use isolated runner.
+      } else if (q.type === 'code') {
         if (userAnswer && typeof userAnswer === 'string') {
-          if (userAnswer.includes('return') && userAnswer.length > 10) {
-            score += 1; // Basic heuristic: if they wrote some code with a return
-            isCorrect = true;
-          }
+          isCorrect = validateCode(q.id, userAnswer);
+          if (isCorrect) score += 1;
         }
       }
 
@@ -38,20 +52,13 @@ export async function POST(req: Request) {
 
     const totalScore = `${score}/${questions.length}`;
 
-    // 2. Save to Supabase (Uncomment when Database Tables are ready)
-    /*
-    await supabase.from('quiz_submissions').insert({
-      email: userEmail,
-      name: userName,
-      score: totalScore,
-      answers: JSON.stringify(answers)
-    });
-    */
-
-    // 3. Save to Google Sheets
+    // 2. Save to Google Sheets
     if (process.env.GOOGLE_SHEETS_CREDENTIALS && process.env.GOOGLE_SHEETS_SPREADSHEET_ID) {
       try {
-        const credentials = JSON.parse(process.env.GOOGLE_SHEETS_CREDENTIALS);
+        // Handle potential literal newlines in the environment variable string
+        const credentialsRaw = process.env.GOOGLE_SHEETS_CREDENTIALS || '';
+        const sanitizedCredentials = credentialsRaw.replace(/\n/g, '\\n');
+        const credentials = JSON.parse(sanitizedCredentials);
         const auth = new google.auth.GoogleAuth({
           credentials,
           scopes: ['https://www.googleapis.com/auth/spreadsheets'],
@@ -61,21 +68,24 @@ export async function POST(req: Request) {
         
         await sheets.spreadsheets.values.append({
           spreadsheetId: process.env.GOOGLE_SHEETS_SPREADSHEET_ID,
-          range: 'Sheet1!A:D', // Assuming Sheet1 exists with columns
+          range: 'Sheet1!A:D', // Assuming Sheet1 exists with columns: Timestamp, Name, Email, Score
           valueInputOption: 'USER_ENTERED',
           requestBody: {
             values: [[
-              new Date().toISOString(),
-              userName || 'Anonymous',
-              userEmail || 'No Email',
+              new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' }),
+              userName,
+              userEmail,
               totalScore
             ]]
           }
         });
-      } catch (sheetError) {
+        console.log("Successfully appended to Google Sheets!");
+      } catch (sheetError: any) {
         console.error("Google Sheets Error:", sheetError);
-        // We probably don't want to fail the whole request if sheets fail
+        // We log but don't fail the request to ensure user sees their result
       }
+    } else {
+      console.warn("Google Sheets credentials or ID missing in environment variables.");
     }
 
     return NextResponse.json({ success: true, score: totalScore, results: gradedResults });
@@ -84,3 +94,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
   }
 }
+

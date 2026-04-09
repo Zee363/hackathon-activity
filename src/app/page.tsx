@@ -5,7 +5,9 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [isLogin, setIsLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -13,13 +15,15 @@ export default function Home() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Stub for Supabase Auth 
-    // In actual implementation, we'll authenticate the user here.
-    // For now, simulating API call then redirecting.
+    // Save to localStorage for the quiz session
+    localStorage.setItem('quiz_user_name', userName);
+    localStorage.setItem('quiz_user_email', userEmail);
+
+    // Minor delay for visual feedback
     setTimeout(() => {
       setIsLoading(false);
       router.push('/quiz');
-    }, 1000);
+    }, 800);
   };
 
   return (
@@ -72,6 +76,8 @@ export default function Home() {
                   <input
                     type="text"
                     required
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
                     className="bg-white/6 border border-white/15 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#720075] transition-all placeholder-white/30"
                     placeholder="John Doe"
                   />
@@ -83,23 +89,27 @@ export default function Home() {
                 <input
                   type="email"
                   required
+                  value={userEmail}
+                  onChange={(e) => setUserEmail(e.target.value)}
                   className="bg-white/6 border border-white/15 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#720075] transition-all placeholder-white/30"
                   placeholder="you@example.com"
                 />
               </div>
 
-              <div className="flex flex-col gap-1.5">
-                <div className="flex justify-between">
-                  <label className="text-xs font-normal text-white/55 uppercase tracking-wider">Password</label>
-                  {isLogin && <a href="#" className="text-xs text-white/55 ">Forgot?</a>}
+              {isLogin && (
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex justify-between">
+                    <label className="text-xs font-normal text-white/55 uppercase tracking-wider">Password</label>
+                    <a href="#" className="text-xs text-white/55 hover:text-white">Forgot?</a>
+                  </div>
+                  <input
+                    type="password"
+                    required
+                    className="bg-white/6 border border-white/15 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#720075] transition-all placeholder-white/30"
+                    placeholder="••••••••"
+                  />
                 </div>
-                <input
-                  type="password"
-                  required
-                  className="bg-white/6 border border-white/15 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#720075] transition-all placeholder-white/30"
-                  placeholder="••••••••"
-                />
-              </div>
+              )}
 
               <button
                 type="submit"
@@ -112,7 +122,7 @@ export default function Home() {
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                 ) : (
-                  <span>{isLogin ? 'Sign In' : 'Create Account & Start'}</span>
+                  <span>{isLogin ? 'Sign In' : 'Start Quiz'}</span>
                 )}
               </button>
             </form>
@@ -132,3 +142,4 @@ export default function Home() {
     </main>
   );
 }
+
