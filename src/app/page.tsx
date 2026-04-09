@@ -23,7 +23,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0a1733] flex items-center justify-center p-4 selection:bg-[#720075]/30">
+    <main className="h-[calc(100vh-5rem)] overflow-hidden bg-[#0a1733] flex items-center justify-center p-4 selection:bg-[#720075]/30">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#720075]/10 blur-[120px] rounded-full mix-blend-screen" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full mix-blend-screen" />
@@ -55,9 +55,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="glass-panel p-8 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-[linear-gradient(135deg,#000000_0%,#720075_100%)]" />
-
+          <div className="glass-panel p-8 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/8 shadow-2xl relative overflow-hidden">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-semibold text-white mb-2">
                 {isLogin ? 'Welcome Back' : 'Join the Race'}
@@ -93,7 +91,7 @@ export default function Home() {
               <div className="flex flex-col gap-1.5">
                 <div className="flex justify-between">
                   <label className="text-xs font-normal text-white/55 uppercase tracking-wider">Password</label>
-                  {isLogin && <a href="#" className="text-xs text-[#FFFFFF] ">Forgot?</a>}
+                  {isLogin && <a href="#" className="text-xs text-white/55 ">Forgot?</a>}
                 </div>
                 <input
                   type="password"
