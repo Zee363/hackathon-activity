@@ -12,6 +12,7 @@ export default function QuizView() {
   const [isFinished, setIsFinished] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [score, setScore] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
@@ -56,9 +57,11 @@ export default function QuizView() {
       if (data.success) {
         setScore(data.score);
       } else {
+        setSubmitError(data.error || "Submission failed. Please check your connection.");
         console.error("Submission failed:", data.error);
       }
-    } catch (error) {
+    } catch (error: any) {
+      setSubmitError("Network error. Your score could not be saved.");
       console.error("Submission Error:", error);
     } finally {
       setIsSubmitting(false);
@@ -99,6 +102,12 @@ export default function QuizView() {
                {score || "--/--"}
              </div>
           </div>
+
+          {submitError && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6 text-red-400 text-sm">
+              {submitError}
+            </div>
+          )}
 
           {isSubmitting ? (
             <div className="flex items-center justify-center space-x-2 text-white">

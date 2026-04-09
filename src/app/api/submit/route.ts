@@ -57,8 +57,18 @@ export async function POST(req: Request) {
       try {
         // Handle potential literal newlines in the environment variable string
         const credentialsRaw = process.env.GOOGLE_SHEETS_CREDENTIALS || '';
-        const sanitizedCredentials = credentialsRaw.replace(/\n/g, '\\n');
-        const credentials = JSON.parse(sanitizedCredentials);
+        // Fix: Aggressively escape all control characters (newlines, tabs, etc.) so JSON.parse succeeds
+        const sanitized = credentialsRaw
+          .replace(/\n/g, '\\n')
+          .replace(/\r/g, '\\r')
+          .replace(/\t/g, '\\t');
+        const credentials = JSON.parse(sanitized);
+        
+        // Robust handling of the private_key formatting (standard fix for Vercel/Production)
+        if (credentials.private_key) {
+          credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
+        }
+
         const auth = new google.auth.GoogleAuth({
           credentials,
           scopes: ['https://www.googleapis.com/auth/spreadsheets'],
