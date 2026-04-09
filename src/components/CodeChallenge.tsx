@@ -23,14 +23,14 @@ export default function CodeChallenge({ initialCode, onChange }: CodeChallengePr
   };
 
   return (
-    <div className="w-full rounded-xl overflow-hidden border border-gray-700 shadow-xl bg-[#0d1117] relative">
-      <div className="flex bg-gray-800 text-gray-400 text-xs px-4 py-2 border-b border-gray-700 items-center justify-between">
+    <div className="w-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-white/5 relative backdrop-blur-xl">
+      <div className="flex bg-white/5 text-white/55 text-xs px-4 py-3 border-b border-white/10 items-center justify-between">
         <div className="flex space-x-2">
-          <div className="w-3 h-3 rounded-full bg-red-500"></div>
-          <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-          <div className="w-3 h-3 rounded-full bg-green-500"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-white/10"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-white/10"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-white/10"></div>
         </div>
-        <span>index.js</span>
+        <span className="font-mono">index.js</span>
       </div>
       <div data-color-mode="dark">
         <CodeEditor
@@ -38,12 +38,13 @@ export default function CodeChallenge({ initialCode, onChange }: CodeChallengePr
           language="js"
           placeholder="Please enter JS code."
           onChange={(ev) => handleUpdate(ev.target.value)}
-          padding={15}
+          padding={20}
           style={{
             fontSize: 14,
-            backgroundColor: "#0d1117",
+            backgroundColor: "transparent",
             fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-            minHeight: "200px"
+            minHeight: "240px",
+            color: "#FFFFFF"
           }}
         />
       </div>

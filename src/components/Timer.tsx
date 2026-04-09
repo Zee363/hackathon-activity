@@ -39,15 +39,15 @@ export default function Timer({ durationSeconds, onTimeUp, isPaused = false }: T
 
   return (
     <div className="w-full flex-col flex gap-2">
-      <div className="flex justify-between items-center text-sm font-semibold text-gray-400">
-        <span className={isDanger ? 'text-red-400 animate-pulse' : ''}>
+      <div className="flex justify-between items-center text-sm font-semibold text-white/55">
+        <span className={isDanger ? 'text-white animate-pulse' : ''}>
           {minutes}:{seconds.toString().padStart(2, '0')}
         </span>
         <span>{durationSeconds}s Total</span>
       </div>
-      <div className="h-2 w-full bg-gray-800 rounded-full overflow-hidden">
+      <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
         <motion.div
-          className={`h-full rounded-full ${isDanger ? 'bg-red-500' : 'bg-[#e91e63]'}`}
+          className={`h-full rounded-full bg-[linear-gradient(135deg,#000000_0%,#720075_100%)] ${isDanger ? 'opacity-80' : ''}`}
           initial={false}
           animate={{ width: `${percentage}%` }}
           transition={{ ease: "linear", duration: 1 }}

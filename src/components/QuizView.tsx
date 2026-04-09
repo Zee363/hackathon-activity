@@ -46,24 +46,25 @@ export default function QuizView() {
         <motion.div 
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="bg-gray-900 border border-gray-800 p-8 rounded-2xl shadow-2xl text-center max-w-md w-full"
+          className="bg-white/5 border border-white/10 p-8 rounded-3xl shadow-2xl backdrop-blur-xl text-center max-w-md w-full relative overflow-hidden"
         >
-          <div className="w-20 h-20 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="absolute top-0 left-0 w-full h-1 bg-[linear-gradient(135deg,#000000_0%,#720075_100%)]" />
+          <div className="w-20 h-20 bg-white/10 text-white rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
           </div>
-          <h2 className="text-3xl font-bold mb-2">Quiz Completed!</h2>
-          <p className="text-gray-400 mb-6">Your answers have been submitted successfully.</p>
+          <h2 className="text-3xl font-semibold mb-2">Quiz Completed!</h2>
+          <p className="text-white/55 mb-6">Your answers have been submitted successfully.</p>
           {isSubmitting ? (
-            <div className="flex items-center justify-center space-x-2 text-pink-500">
+            <div className="flex items-center justify-center space-x-2 text-white">
               <span className="animate-bounce">●</span>
               <span className="animate-bounce delay-100">●</span>
               <span className="animate-bounce delay-200">●</span>
-              <span className="ml-2 text-sm text-gray-400">Saving results...</span>
+              <span className="ml-2 text-sm text-white/55">Saving results...</span>
             </div>
           ) : (
             <button 
               onClick={() => window.location.href = '/'}
-              className="px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-600 rounded-xl font-semibold hover:opacity-90 transition-all text-white w-full"
+              className="px-6 py-3 bg-white text-[#0a1733] rounded-xl font-bold hover:bg-white/88 transition-all w-full"
             >
               Return Home
             </button>
@@ -76,12 +77,12 @@ export default function QuizView() {
   return (
     <div className="max-w-4xl mx-auto w-full flex flex-col gap-6 text-gray-100">
       {/* Header section with progress & timer */}
-      <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-xl flex flex-col gap-4">
+      <div className="bg-white/5 border border-white/10 rounded-3xl p-6 shadow-2xl backdrop-blur-xl flex flex-col gap-4 relative overflow-hidden">
         <div className="flex justify-between items-center w-full">
-          <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">
+          <span className="text-sm font-normal text-white/55 uppercase tracking-widest">
             Question {currentIdx + 1} of {questions.length}
           </span>
-          <span className="px-3 py-1 bg-pink-500/20 text-pink-400 rounded-full text-xs font-semibold">
+          <span className="px-3 py-1 bg-white/10 text-white rounded-full text-xs font-normal">
             {question.type === 'mcq' ? 'Multiple Choice' : 'Coding Challenge'}
           </span>
         </div>
@@ -101,14 +102,14 @@ export default function QuizView() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
-            className="bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 shadow-xl relative z-10 w-full flex flex-col gap-6"
+            className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl backdrop-blur-xl relative z-10 w-full flex flex-col gap-6"
           >
             <div className="space-y-4">
-              <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+              <h2 className="text-2xl md:text-3xl font-semibold text-white">
                 {question.title}
               </h2>
               {question.description && (
-                <p className="text-gray-300 md:text-lg whitespace-pre-line leading-relaxed">
+                <p className="text-white/85 md:text-lg whitespace-pre-line leading-relaxed">
                   {question.description}
                 </p>
               )}
@@ -116,7 +117,7 @@ export default function QuizView() {
 
             {/* If there is a code snippet to display (mostly for MCQ read-only) */}
             {question.codeSnippet && question.type === 'mcq' && (
-              <div className="bg-black text-green-400 p-4 rounded-xl font-mono text-sm overflow-x-auto border border-gray-700 shadow-inner">
+              <div className="bg-black/50 text-white/85 p-4 rounded-xl font-mono text-sm overflow-x-auto border border-white/10 shadow-inner">
                 <pre><code>{question.codeSnippet}</code></pre>
               </div>
             )}
@@ -131,16 +132,16 @@ export default function QuizView() {
                       onClick={() => handleMCQSelect(i)}
                       className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
                         answers[question.id] === i 
-                          ? 'border-pink-500 bg-pink-500/10' 
-                          : 'border-gray-700 hover:border-gray-500 hover:bg-gray-800'
+                          ? 'border-[#720075] bg-[#720075]/10' 
+                          : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
                       }`}
                     >
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                        answers[question.id] === i ? 'border-pink-500' : 'border-gray-500'
+                      <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${
+                        answers[question.id] === i ? 'border-[#720075] bg-[#720075]' : 'border-white/30'
                       }`}>
-                        {answers[question.id] === i && <div className="w-3 h-3 rounded-full bg-pink-500" />}
+                        {answers[question.id] === i && <div className="w-2 h-2 rounded-full bg-white" />}
                       </div>
-                      <span className="text-base md:text-lg">{opt}</span>
+                      <span className={`text-base md:text-lg ${answers[question.id] === i ? 'text-white' : 'text-white/85'}`}>{opt}</span>
                     </div>
                   ))}
                 </div>
@@ -158,13 +159,13 @@ export default function QuizView() {
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end mt-8 border-t border-gray-800 pt-6">
+            <div className="flex justify-end mt-8 border-t border-white/10 pt-6">
               <button 
                 onClick={handleNext}
-                className="px-8 py-3 bg-white text-black rounded-xl font-bold text-lg hover:bg-gray-200 transition-all flex border border-gray-200 shadow-[0_0_15px_rgba(255,255,255,0.3)] items-center gap-2"
+                className="px-8 py-3 bg-white text-[#0a1733] rounded-xl font-bold text-lg hover:bg-white/88 transition-all flex items-center gap-2 group"
               >
                 {currentIdx === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
               </button>
             </div>
           </motion.div>
