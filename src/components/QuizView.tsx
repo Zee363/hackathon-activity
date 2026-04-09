@@ -87,7 +87,11 @@ export default function QuizView() {
           </div>
           
           <h2 className="text-3xl font-semibold mb-2">Quiz Completed!</h2>
-          <p className="text-white/55 mb-6 font-medium">Well done, {userName}!</p>
+          <p className="text-white/55 mb-6 font-medium">
+            {score && parseInt(score.split('/')[0]) < 5 
+              ? `Nice try, ${userName}! Keep practicing!` 
+              : `Well done, ${userName}!`}
+          </p>
           
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8 backdrop-blur-sm">
              <p className="text-sm text-white/40 uppercase tracking-widest font-bold mb-1">Your Score</p>
